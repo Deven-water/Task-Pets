@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { grassBg } from '../images';
 
 function PlaygroundPage({ inventory, setInventory, save }) {
     const [mode, setMode] = useState("wander");
@@ -119,22 +120,22 @@ function PlaygroundPage({ inventory, setInventory, save }) {
                 {inventory.pets.length === 0 ? <p className='bg-gray-800 rounded text-xl font-bold p-8 text-shadow-lg/30'>You currently don't have any pets. Go to the shop to adopt one!</p>: inventory.pets.map((item,index) => (
                     <div key={index}>
                     <button onClick={() => setPetinfo(index)} className='relative hover:bg-black/30 rounded-full'>
-                        <img src={item.house}></img>
+                        <img className='w-100 h-80 object-contain' src={item.house}></img>
                         <div className="absolute inset-0 flex items-center top-14">
-                            <img src={item.pic}></img>
+                            <img className='w-100 h-40 object-contain' src={item.pic}></img>
                         </div>
                         <div className='absolute bottom-2 left-1/2 -translate-x-1/2 bg-gray-800 px-2 py-0.5 rounded text-white text-md whitespace-nowrap'>"{item.name}"</div>
                         </button>
 
                         {petinfo == index && (
                             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setPetinfo(null)}>
-                                <div className="bg-gray-800 rounded p-6 items-center flex flex-col gap-4 w-[700px] h-[500px] border-2 border-solid" onClick={(e) => e.stopPropagation()}>
+                                <div className="bg-gray-800 rounded p-6 items-center flex flex-col gap-4 w-[700px] h-[500px] border-2 border-solid relative" onClick={(e) => e.stopPropagation()}>
+                                    <button className='absolute top-3 right-3 cursor-pointer rounded-full w-[25px] h-[25px] hover:bg-gray-900' onClick={() => setPetinfo(null)}>❌</button>
                                     <div>
-                                    <button className='absolute top-12 right-17 cursor-pointer hover:bg-gray-900 rounded-full w-[25px] h-[25px]' onClick={() => setPetinfo(null)}>❌</button>
                                          <div className='w-[500px] p-10'>
                                             <h2 className="text-xl font-bold text-center">"{item.name}"
                                             </h2>
-                                            <img className='scale-80' src={item.pic} />
+                                            <img className='w-100 h-60 object-contain' alt="Fixed size" src={item.pic} />
                                         </div>
                                         <div className='flex gap-2 mt-1'>
                                             <button className='bg-gray-700 rounded px-2 py-1 text-white w-full hover:bg-gray-900' onClick={() => {

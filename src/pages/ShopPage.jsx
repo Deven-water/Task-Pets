@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { dogImg, dogHouse, grassBg, food } from '../images';
+import { dogImg, dogHouse, grassBg, food, cat, catHouse } from '../images';
 
 function ShopPage({coins, setCoins, save, inventory, setInventory, stats, setStats}) {
     const [notAfford, setNotAfford] = useState(null);
@@ -10,6 +10,7 @@ function ShopPage({coins, setCoins, save, inventory, setInventory, stats, setSta
         {name: "Grass", price: 60, icon: grassBg, type: "bg"},
         {name: "Dog House", price: 60, icon: dogHouse, type: "bg"},
         {name: "Dog", price: 100, icon: dogImg, type: "pets"},
+        {name: "Cat", price: 100, icon: cat, type: "pets"},
         {name: "super Food", price: 5, icon: food, type: "food"},
     ];
 
@@ -86,7 +87,7 @@ function ShopPage({coins, setCoins, save, inventory, setInventory, stats, setSta
                     <div 
                     key={index} 
                     className="bg-gray-800 rounded p-6 flex flex-col items-center gap-3">
-                        <img src={item.icon}></img>
+                        <img className='w-60 h-60 object-contain' src={item.icon}></img>
                         <span className="font-bold">{item.name}</span>
                         <span className="text-yellow-400">${item.price}</span>
                         
