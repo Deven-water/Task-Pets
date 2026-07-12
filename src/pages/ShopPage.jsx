@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { dogImg, dogHouse, grassBg, food, cat, catHouse } from '../images';
+import { dogImg, dogHouse, grassBg, food, cat, catHouse, bird } from '../images';
 
 function ShopPage({coins, setCoins, save, inventory, setInventory, stats, setStats}) {
     const [notAfford, setNotAfford] = useState(null);
@@ -11,6 +11,7 @@ function ShopPage({coins, setCoins, save, inventory, setInventory, stats, setSta
         {name: "Dog House", price: 60, icon: dogHouse, type: "bg"},
         {name: "Dog", price: 100, icon: dogImg, type: "pets"},
         {name: "Cat", price: 100, icon: cat, type: "pets"},
+        {name: "Bird", price: 100, icon: bird, type: "pets"},
         {name: "super Food", price: 5, icon: food, type: "food"},
     ];
 
@@ -28,7 +29,7 @@ function ShopPage({coins, setCoins, save, inventory, setInventory, stats, setSta
             if (item.type == "pets") {
                 const newPets = [...inventory.pets, {
                     name: item.name, 
-                    house: dogHouse, 
+                    house: grassBg,  
                     pic: item.icon,
                     hunger: 90,
                     happiness: 90,
