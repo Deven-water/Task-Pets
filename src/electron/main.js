@@ -9,6 +9,14 @@ const __dirname = path.dirname(__filename);
 const isDev = process.env.NODE_ENV === 'development';
 const APPDATA = path.join(app.getPath('userData'), 'data.json');
 
+const cron = require('node-cron');
+
+const Store = require('electron-store');
+
+cron.schedule('0 0 * * *', () => {
+  mainWindow.webContents.send('daily-task');
+});
+
 function createWindow() {
   const win = new BrowserWindow({
     width: 800,
@@ -56,6 +64,15 @@ app.whenReady().then(() => {
       popupWin.loadURL('http://localhost:5173/popup.html');
     } else {
       popupWin.loadFile(path.join(__dirname, '../../dist/popup.html'));
+    }
+
+    const store = new Store();
+    const lastRun = store.get('lastDailyRun', '');
+    const today = new Date().toDateString(); // "Sat Jul 12 2026"
+
+    if (lastRun !== today) {
+      mainWindow.webContents.send('daily-task');
+      store.set('lastDailyRun', today);
     }
 
     popupWin.on('blur', () => popupWin.close());

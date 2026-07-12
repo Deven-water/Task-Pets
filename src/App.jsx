@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, use } from 'react';
 import ShopPage from './pages/ShopPage';
 import SettingsPage from './pages/SettingsPage';
 import PlaygroundPage from './pages/PlaygroundPage';
@@ -8,6 +8,7 @@ import { blueSky } from './images';
 function App() {
   const [page, setPage] = useState('todos');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [popUp, setPopUp] = useState(false);
 
   const [todos, setTodos] = useState([]);
   const [coins, setCoins] = useState(0);
@@ -16,6 +17,9 @@ function App() {
   const [name, setName] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
+
+  const [recurring, setRecurring] = useState(false);
+  const [recurringTodos, setRecurringTodos] = useState([]);
 
   const expPerLevel = 100;
   const level = Math.floor(exp / expPerLevel);
@@ -32,7 +36,7 @@ function App() {
 
   const stateRef = useRef({});
   useEffect(() => {
-    stateRef.current = { todos, coins, exp, username, inventory, background, stats };
+    stateRef.current = { todos, coins, exp, username, inventory, background, stats, recurringTodos };
   });
 
   function save(updates = {}) {
@@ -48,8 +52,8 @@ function App() {
       setUsername(data.username || "User");
       setBackground(data.background || blueSky)
       setStats(data.stats || { streak: 0, taskCom: 0, adopted: 0 })
+      setRecurringTodos(data.recurringTodos || []);
       
-
       let inventory = data.inventory || { pets: [], food: [], bg: [] };
       if (data.lastOnline) {
         const minutesPassed = Math.floor((Date.now() - data.lastOnline) / 60000);
@@ -114,18 +118,31 @@ function App() {
       setStats(prev => ({ ...prev, taskCom: (prev.taskCom || 0) + 1 }));
     });
 
-    return () => clearInterval(interval);
+    window.electron.ipcRenderer.on('daily-task', () => {
+      setTodos([...new Set([...todos, ...recurringTodos])])
+    });
+    
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners('daily-task');
+      return clearInterval(interval);}
   }, []);
-
 
   function addTask() {
     if (name) {
       const newTodos = [...todos, { name, date, time }];
       setTodos(newTodos);
       save({todos:newTodos});
+
+      if (recurring) {
+        setRecurringTodos(newTodos);
+        save({recurringTodos:newTodos});
+        setRecurring(false);
+      };
+
       setName('');
       setDate('');
       setTime('');
+      setPopUp(false)
     };
   }
 
@@ -235,33 +252,9 @@ function App() {
             </div>
           </div>
 
-          <div className="flex gap-4 mb-6">
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Task Name"
-              className="bg-gray-800 px-4 py-2 rounded"
-            />
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="bg-gray-800 px-4 py-2 rounded"
-            />
-            <input
-              type="time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              className="bg-gray-800 px-4 py-2 rounded"
-            />
-            <button
-              onClick={addTask}
-              className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700"
-            >
-              Add
-            </button>
-          </div>
+          <button onClick={() => setPopUp(true)} className="absolute bottom-6 right-4 bg-gray-800 w-14 h-14 rounded-full z-10 text-5xl flex items-center justify-center hover:bg-gray-900">
+              +
+          </button>
 
           {todos.map((todo, index) => (
             <div key={index} className="flex items-center gap-4 mb-2 bg-gray-800 p-4 rounded">
@@ -277,6 +270,58 @@ function App() {
             </div>
           ))}
         </div>
+      )}
+
+      {popUp && (
+        <div>
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            onClick={() => setPopUp(false)}>
+            <div className="bg-gray-800 rounded p-6 items-center flex flex-col gap-4 w-[700px] h-[200px] border-2 border-solid"
+              onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center w-full">
+            <h2 className="text-xl font-bold text-center flex-1">Add a Task!</h2>
+            <button className='ml-auto cursor-pointer hover:bg-gray-900 rounded-full w-[25px] h-[25px]'
+              onClick={() => setPopUp(false)}>❌</button>
+            </div>
+                <div className="flex gap-4 mb-6">
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Task Name"
+                    className="bg-gray-900 px-4 py-2 rounded"
+                  />
+                  <input
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    className="bg-gray-900 px-4 py-2 rounded"
+                  />
+                  <input
+                    type="time"
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                    className="bg-gray-900 px-4 py-2 rounded"
+                  />
+                  <button
+                    onClick={addTask}
+                    className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">
+                      Add
+                  </button>
+                </div>
+                  <div className="flex gap-2 mt-1">
+                    <div className="flex items-center gap-1">
+                      <input 
+                        type="checkbox" 
+                        checked={recurring}
+                        onChange={(e) => setRecurring(e.target.checked)}
+                        />
+                      <div>Recurring Task</div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
       )}
 
       {page === "Shop" && (
