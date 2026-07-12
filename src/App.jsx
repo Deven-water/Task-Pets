@@ -131,7 +131,7 @@ function App() {
 
   function completeTask(index) {
     const newTodos = todos.filter((_, i) => i !== index);
-    const newCoins = coins + 10000;
+    const newCoins = coins + 10;
     const newExp = exp + 25;
     const newTaskCom = stats.taskCom + 1;
     setCoins(newCoins);

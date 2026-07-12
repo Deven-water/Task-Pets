@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { dogImg, dogHouse, grassBg, food, cat, catHouse, bird } from '../images';
+import { dogImg, dogHouse, grassBg, food, cat, catHouse, bird, birdHouse } from '../images';
 
 function ShopPage({coins, setCoins, save, inventory, setInventory, stats, setStats}) {
     const [notAfford, setNotAfford] = useState(null);
@@ -9,10 +9,12 @@ function ShopPage({coins, setCoins, save, inventory, setInventory, stats, setSta
     const shopItems = [
         {name: "Grass", price: 60, icon: grassBg, type: "bg"},
         {name: "Dog House", price: 60, icon: dogHouse, type: "bg"},
+        {name: "Cat House", price: 60, icon: catHouse, type: "bg"},
+        {name: "Bird House", price: 60, icon: birdHouse, type: "bg"},
         {name: "Dog", price: 100, icon: dogImg, type: "pets"},
         {name: "Cat", price: 100, icon: cat, type: "pets"},
         {name: "Bird", price: 100, icon: bird, type: "pets"},
-        {name: "super Food", price: 5, icon: food, type: "food"},
+        {name: "Super Food", price: 5, icon: food, type: "food"},
     ];
 
     const filteredItems = shopItems.filter(item => item.type == shopFilter);

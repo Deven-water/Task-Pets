@@ -7,3 +7,4 @@ export { default as cat } from './cat.png';
 export { default as catHouse } from './catHouse.png';
 export { default as food } from './food.png';
 export { default as bird } from './bird.png'
+export {default as birdHouse} from './BirdHouse.png'
